@@ -71,14 +71,19 @@ EXPOSE 6901
 # NOTE alternative is to use libnss_switch and create user at runtime -> use entrypoint script
 ARG UID=1000
 ARG USER=default
+ARG USER2=Nipun
+ARG UID2=2000
+RUN useradd ${USER2} -u ${UID2} -U -d /home/${USER2} -m -s /bin/bash
 RUN useradd ${USER} -u ${UID} -U -d /home/${USER} -m -s /bin/bash
 RUN apt-get update && apt-get install -y sudo && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     echo "${USER} ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${USER}" && \
+    echo "${USER2} ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${USER2}" && \
+    chmod 440 "/etc/sudoers.d/${USER2}" \
     chmod 440 "/etc/sudoers.d/${USER}"
-USER "${USER}"
-ENV USER="${USER}" \
-    HOME="/home/${USER}"
-WORKDIR "/home/${USER}"
+USER "${USER2}"
+ENV USER="${USER2}" \
+    HOME="/home/${USER2}"
+WORKDIR "/home/${USER2}"
 
 # Set up VNC
 RUN mkdir -p $HOME/.vnc
